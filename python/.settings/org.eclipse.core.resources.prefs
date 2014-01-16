@@ -1,0 +1,24 @@
+#Sun Nov 06 13:55:35 PST 2011
+eclipse.preferences.version=1
+encoding//khopeshpy/animals/__init__.py=utf-8
+encoding//khopeshpy/animals/actions/attackCooldown.py=utf-8
+encoding//khopeshpy/animals/actions/hunt.py=utf-8
+encoding//khopeshpy/animals/actions/move.py=utf-8
+encoding//khopeshpy/animals/actions/scavenge.py=utf-8
+encoding//khopeshpy/animals/actions/sleep.py=utf-8
+encoding//khopeshpy/animals/base.py=utf-8
+encoding//khopeshpy/animals/bison.py=utf-8
+encoding//khopeshpy/animals/top.py=utf-8
+encoding//khopeshpy/animals/wolf.py=utf-8
+encoding//khopeshpy/avatars/__init__.py=utf-8
+encoding//khopeshpy/avatars/actions/idle.py=utf-8
+encoding//khopeshpy/avatars/actions/move.py=utf-8
+encoding//khopeshpy/avatars/actions/sleep.py=utf-8
+encoding//khopeshpy/avatars/human.py=utf-8
+encoding//khopeshpy/avatars/top.py=utf-8
+encoding//khopeshpy/cell.py=utf-8
+encoding//khopeshpy/db.py=utf-8
+encoding//khopeshpy/level.py=utf-8
+encoding//khopeshpy/world.py=utf-8
+encoding/db.py=utf-8
+encoding/server-setup.py=utf-8

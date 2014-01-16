@@ -1,0 +1,175 @@
+<html xmlns="http://www.w3.org/1999/xhtml" debug="true">
+  <head>
+    <title>OpenLayers: Popup Mayhem</title>
+<!--     Stylesheets should always be loaded before all scripts -->
+		<link type="text/css" href="css/jquery-ui.css" rel="stylesheet" />	
+		<link rel="stylesheet" href="style.css" type="text/css" /> 
+		
+		
+		
+<!-- 		These should be moved to the end of the html document later for preformance-->		
+		<script src="jquery.js"></script>
+		<script type="text/javascript" src="jquery-ui.js"></script>
+		
+		<script src="khopeshjs/config.js"></script>
+		<script src="khopeshjs/init.js"></script>
+		<script src="khopeshjs/model.js"></script>
+		<script src="khopeshjs/controller.js"></script>
+		<script src="khopeshjs/worldmap.js"></script>
+		<script src="khopeshjs/display.js"></script>
+		
+		<script src="khopeshjs/protoobject.js"></script>
+		<script src="khopeshjs/modelobject.js"></script>
+		<script src="khopeshjs/world.js"></script>
+		<script src="khopeshjs/user.js"></script>
+		<script src="khopeshjs/family.js"></script>
+		<script src="khopeshjs/avatar.js"></script>
+		
+    <script type="text/javascript">
+			var timeout = 0;
+      $(document).ready(function(){
+				var time = new Date();
+				Khopesh.console(time.getTime());
+				
+				Khopesh.boot1();
+      });
+    </script>
+  </head>
+  <body>
+
+    <div id="header" class="ui-widget-header ui-corner-all ui-helper-clearfix">
+			<span class="header-title">
+				Khopesh
+			</span>
+			<div id="header-bar">
+				<span id="header-text">
+				Some text
+				</span>
+				<button id="header-login">
+					Login
+				</button>
+				<button id="header-register">
+					Register
+				</button>
+				<button id="header-recover">
+					Recover
+				</button>
+				<button id="header-logout">
+					Logout
+				</button>
+			</div>
+    </div>
+    
+    
+    <div id="centercol">
+			<div id="tabs-a">
+				<ul id="tabs-a-header" class="tab-header">
+					<li><a href="#tabs-a-1">Console</a></li>
+					<li><a href="#tabs-a-2">Map</a></li>
+					<li><a href="#tabs-a-3">Player</a></li>
+					<li><a href="#tabs-a-4">Family</a></li>
+					<li><a href="#tabs-a-5">Avatars</a></li>
+				</ul>
+				
+				<div id="tabs-a-1" class="tab-content-clipped console-outer">
+					<div class="console-inner">
+						Datetime: 
+					</div>
+				</div>
+				
+				<div id="tabs-a-2" class="tab-content-clipped">
+					<div id="worldmap">
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-e" style="left: 45px; top: 45px;" onClick="Khopesh.WorldMap.moveMap(1,0)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-s" style="left: 30px; top: 75px;" onClick="Khopesh.WorldMap.moveMap(0,1)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-w" style="left: 15px; top: 45px;" onClick="Khopesh.WorldMap.moveMap(-1,0)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-n" style="left: 30px; top: 15px;" onClick="Khopesh.WorldMap.moveMap(0,-1)"></button-icon>
+						
+						<button-icon class="control-icon" icon="ui-icon-plusthick" style="left: 90px; top: 30px;" onClick="Khopesh.WorldMap.zoomMap(-1)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-minusthick" style="left: 90px; top: 60px;" onClick="Khopesh.WorldMap.zoomMap(1)"></button-icon>
+						
+						<button-icon class="control-icon z-control-icon" icon="ui-icon-arrowreturnthick-1-n" style="left: 120px; top: 30px;" onClick="Khopesh.WorldMap.moveMapZ(1)"></button-icon>
+						<button-icon class="control-icon z-control-icon" icon="ui-icon-arrowreturnthick-1-s" style="left: 120px; top: 60px;" onClick="Khopesh.WorldMap.moveMapZ(-1)"></button-icon>
+						<div id="viewport">
+							<div id="innermap">
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div id="tabs-a-3" class="tab-content-unclipped">
+					<p>
+						<big>Player Info:</big>
+						<div id="player-info-div"></div>
+					</p>
+					<p>
+						<big>Chat:</big>
+						<br />
+						World playerlist:
+						<select id="tabs-a-3-playerlist">
+						</select>
+						<br />
+						Friend list:
+						<select>
+							<option>a</option>
+							<option>b</option>
+						</select>
+						<br />
+						<button id="tabs-a-3-chat">
+						Chat
+						</button>
+					</p>
+				</div>
+				
+				<div id="tabs-a-4" class="tab-content-unclipped">
+					<p>
+						<big>Family Info:</big>
+						<div id="family-info-div"></div>
+					</p>
+				</div>
+				
+				<div id="tabs-a-5" class="tab-content-unclipped">
+				</div>
+			</div>
+		</div>
+		
+		<div id="hidden">
+			<dialog id="dialog-login" title="Login">
+				<div id="dialog-login-msg"></div><br /> <!--This is where error messages will be displayed-->
+				Username: <input type='textbox' id='dialog-login-username'/> <br />
+				Password: <input type='password' id='dialog-login-password' />
+			</dialog>
+			
+			<div id="register-dialog" title="Register">
+				Username: <input type='textbox' id='register-username-textbox'/> <br />
+				Password: <input type='password' id='register-password-textbox' />
+			</div>
+			
+			<div id="chat-dialog" title="Chat">
+				Chatting with: <span id="chat-dialog-name"></span>
+				<div id="chat-dialog-text">&nbsp;</div>
+				<input type="text" id="chat-dialog-input"></input>
+				<button id="chat-dialog-send">Send</button>
+				<button id="chat-dialog-recv">Recv</button>
+			</div>
+			
+			<div id="avatar-info-div">
+				<big><div class="avatar-info-name"></div></big>
+				<div class="avatar-info-data"></div>			
+			</div>
+			
+			<div id="user-control" title="User Control">
+				Move:
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-nw" style="left: 30px; top: 30px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-n" style="left: 60px; top: 30px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-ne" style="left: 90px; top: 30px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-w" style="left: 30px; top: 60px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-e" style="left: 90px; top: 60px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-sw" style="left: 30px; top: 90px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-s" style="left: 60px; top: 90px;"></button-icon>
+				<button-icon class="control-icon" icon="ui-icon-arrowthick-1-se" style="left: 90px; top: 90px;"></button-icon>
+			</div>
+			
+			<img src="img-src/void.png" id="reference-image" />
+    </div>
+  </body>
+</html>

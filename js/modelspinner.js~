@@ -1,0 +1,45 @@
+//This class is build with the idea that eventually we will be able to
+// send out all the requests at once can only need to wait for one response.
+//But for simplicity we'll just use it as a container to call each of the
+//	methods individually for right now
+
+//create the global object if it doesn't allready exist
+var Khopesh = Khopesh ? Khopesh : {}
+Khopesh.ModelSpinner = {
+	function entry(objType, id, callback)
+	{
+		this.objType = objType;
+		this.id = id;
+		this.callback = callback;	
+	}
+	
+	this.serverstring = 'http://localhost:8080/getUpdate?callback=?';
+
+	this.entries = new Array();
+	
+	var me = this;	
+	
+	//objType; the type of the object being updated
+	//id: the id of the object being updated
+	//callback: the method to call with the result
+	this.register = function(objType, id, callback)
+	{
+		this.entries.push(new entry(objType, id, callback));
+	}
+	
+	//call with setInterval so that all the stored objects are updated constantly
+	this.spin = function()
+	{
+		for(var x in entries)
+		{			
+			$.getJSON(this.serverstring,
+      {'type': this.entries[x].objType, 'id': this.entries[x].id}
+      function(json)
+      {
+				me.entries[x].callback(json);
+      });
+		}
+	}
+}
+
+//this[entry] = value

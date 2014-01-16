@@ -1,0 +1,42 @@
+<html xmlns="http://www.w3.org/1999/xhtml" debug="true">
+  <head>
+    <title>OpenLayers: Popup Mayhem</title>
+		<link type="text/css" href="css/ui-lightness/jquery-ui-1.8rc3.custom.css" rel="stylesheet" />	
+		<script src="jquery.js"></script>
+		<script type="text/javascript" src="jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="style.css" type="text/css" />    
+    <script src="khopeshjs/init.js"></script>
+    <script src="khopeshjs/modelspinner.js"></script>
+		<script src="khopeshjs/usermodel.js"></script>
+		<script src="khopeshjs/worldmodel.js"></script>
+    <script type="text/javascript">
+			var timeout = 0;
+      $(document).ready(function(){
+				$(window).resize(Khopesh.resizeWindow);
+				Khopesh.resizeWindow();
+
+				var time = new Date();
+				Khopesh.console(time.getTime());
+
+				Khopesh.bootstrap();
+      });
+    </script>
+  </head>
+  <body>
+
+    <div id="header">Header</div>
+    <div id="leftcol">Left column</div>
+    <div id="centercol" style="overflow: auto; background-color: black;" class="console">
+			<div id="innertext">
+			</div>
+		</div>
+		<div id="footer">Footer</div>
+		<div id="hidden">
+		<div id="login-dialog" title="Login">
+			Username:<br />
+			<input type='textbox' id='username-textbox'/>
+		</div>
+    </div>
+  </body>
+</html>

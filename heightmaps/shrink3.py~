@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+#this file converts the 16-bit signed format into 16-bit unsigned greyscale
+#the command to get the png file from the orgional tiff is:
+#convert ETOPO1_Bed_g.tif -depth 16 -type Grayscale ETOPO1_Bed_g2.png
+
+import Image
+
+im = Image.open('earth-10800x5400x65535.png')
+#im = Image.open('test.png')
+
+xSize, ySize = im.size
+
+print im.size
+
+im2 = im.resize((xSize/2, ySize/2))
+    
+im2.save('earth-5400x2700x65535.png')

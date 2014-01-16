@@ -1,0 +1,21 @@
+digraph "classes_No_Name" {
+charset="utf-8"
+rankdir=BT
+"5" [shape="record", label="{khopeshpy.animals.bison.Setup|\l|}"];
+"6" [shape="record", label="{khopeshpy.animals.bison.Bison|\l|}"];
+"7" [shape="record", label="{khopeshpy.animals.bison.Event|stamina\l|forageRate()\lpostCommandForage()\lforageStaminaCost()\ltryForage()\laddCommandForage()\lgetActionList()\lselectFeedBiome()\l}"];
+"9" [shape="record", label="{khopeshpy.animals.base.Setup|\l|}"];
+"10" [shape="record", label="{khopeshpy.animals.base.Event|stateChanged\lanimalId : NoneType\lstamina\lstate : int\lstored : float\lgrowth : float\lhealth\l|sleepConvertRate()\lstateCheck()\lmove()\ltrySleep()\ltryMove()\lconversionRate()\ltryIdle()\lgetNextSequenceNumber()\lrunningStaminaCost()\laddCommandDead()\lpushData()\ldeathCleanup()\lposition()\lneedCalc()\lcommandNext()\laddCommandIdle()\lrunningTimeCost()\laddCommandDefault()\lsleepStaminaDrain()\laddCommandMove()\lpostCommandIdle()\ldecomposedCleanup()\lupdateCmdQueue()\lpostCommandDead()\lunprocessedMax()\lgetActionList()\lgrowthMax()\lpullData()\laddCmdQueue()\lpostCommandMove()\lupdateStats()\laddCommandSleep()\lhealthMax()\lstoredMax()\lpostCommandSleep()\lstaminaMax()\lbiomassEaten()\lstaminaDrain()\l}"];
+"11" [shape="record", label="{khopeshpy.animals.base.States|\l|}"];
+"12" [shape="record", label="{khopeshpy.animals.base.Animal|conn : NoneType\l|createNew()\l}"];
+"13" [shape="record", label="{khopeshpy.animals.base.Species|\l|}"];
+"15" [shape="record", label="{khopeshpy.animals.wolf.Setup|\l|}"];
+"16" [shape="record", label="{khopeshpy.animals.wolf.Wolf|\l|}"];
+"17" [shape="record", label="{khopeshpy.animals.wolf.Event|stamina\l|addCommandScavenge()\lselectScavengePrey()\lgetActionList()\ltryScavenge()\lpostCommandScavenge()\lscavengeRate()\lscavengeStaminaCost()\l}"];
+"5" -> "6" [arrowtail="none", arrowhead="empty"];
+"7" -> "6" [arrowtail="none", arrowhead="empty"];
+"9" -> "12" [arrowtail="none", arrowhead="empty"];
+"10" -> "12" [arrowtail="none", arrowhead="empty"];
+"15" -> "16" [arrowtail="none", arrowhead="empty"];
+"17" -> "16" [arrowtail="none", arrowhead="empty"];
+}

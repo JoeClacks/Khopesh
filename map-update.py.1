@@ -1,0 +1,328 @@
+import Image
+import ImageChops
+import random
+import sys
+import math
+
+import db
+
+#which worldId to work on
+worldId = 1
+  
+class levelData:
+  worldId = 0
+  cellIdX = 0
+  cellIdY = 0
+  levelIdZ = 0
+  
+  #base layer types
+  dirt = 0.0
+  water = 0.0
+  air = 0.0
+  rock = 0.0
+
+  #overlay/biome types
+  # thinking that we'll represent cities, farms, etc as biomes
+  grass = 0.0
+  forest = 0.0
+  farm = 0.0
+  city = 0.0
+  
+  #these may affect the map later but we'll disregard them for now
+  #transLevel = 0
+  #devLevel = 0
+  
+  #currentPlayers = []
+  
+  #wildlife = []
+  #buildings = []
+  #defenses = []
+   
+  ##should keep low numbers for special cases
+  ##	we'll make 0 for unowned
+  #owner = 0 #playerId or governmentId
+  
+  #keeps track if there is a record in the database for this level
+  hasDbRow = False
+  
+  def __init__(self, worldId, cellIdX, cellIdY, levelIdZ):
+    self.worldId = worldId
+    self.cellIdX = cellIdX
+    self.cellIdY = cellIdY
+    self.levelIdZ = levelIdZ
+
+    cursor = db.cursor()
+
+    cursor.execute("select dirt, water, air, rock, grass, forest, farm, city \
+		    from levelData \
+		    where worldId = %s and cellIdX = %s \
+		      and cellIdY = %s and levelIdZ = %s", 
+		      (worldId, cellIdX, cellIdY, levelIdZ))
+
+    row = cursor.fetchone()
+
+    if row == None:
+      #no entry for this level, we will be rendering it as void
+      print "Undefined cell: (%s, %s, %s, %s)" % (worldId, cellIdX, cellIdY, levelIdZ)
+      self.hasDbRow = False
+      return
+      
+    self.hasDbRow = True
+      
+    self.dirt = row["dirt"]
+    self.water = row["water"]
+    self.air = row["air"]
+    self.rock = row["rock"]
+
+    self.grass = row["grass"]
+    self.forest = row["forest"]
+    self.farm = row["farm"]
+    self.city = row["city"]
+    
+    cursor.close()
+
+  def regenerate(self):
+    cursor = db.cursor()
+    
+    cursor.execute("select worldSeaLevel \
+		from worldData where worldId = %s", (self.worldId,))
+		
+    row = cursor.fetchone()
+    
+    worldSeaLevel = row["worldSeaLevel"]
+    
+    #we may want a function to let us set one of these and have the others
+    #	auto adjust
+    self.dirt = 0.0
+    self.water = 0.0
+    self.air = 0.0
+    self.rock = 0.0
+
+    self.grass = 0.0
+    self.forest = 0.0
+    self.farm = 0.0
+    self.city = 0.0
+    
+    if self.levelIdZ < worldSeaLevel:
+	self.rock = 1.0
+    elif self.levelIdZ == worldSeaLevel:
+      rand = random.randint(0,1)
+
+      if rand == 1:
+	self.dirt = 0.5
+	self.air = 0.5
+
+	self.grass = 1.0
+      else:
+	self.water = 0.5
+	self.air = 0.5
+    elif self.levelIdZ > worldSeaLevel:
+      self.air = 1.0
+    else:
+      #something went wrong, we'll leave the setting at 0 and it will render as void
+      pass
+    
+    if self.hasDbRow:
+      cursor.execute("update levelData \
+		      set dirt = %s, water = %s, air = %s, rock = %s, \
+			grass = %s, forest = %s, farm = %s, city = %s \
+		      where worldId = %s and cellIdX = %s \
+			and cellIdY = %s and levelIdZ = %s", \
+			(self.dirt, self.water, self.air, self.rock, \
+			self.grass, self.forest, self.farm, self.city, \
+			self.worldId, self.cellIdX, self.cellIdY, self.levelIdZ))
+    else:
+      cursor.execute("insert into levelData \
+		      (worldId, cellIdX, cellIdY, levelIdZ, \
+		       dirt, water, air, rock, \
+		       grass, forest, farm, city) \
+		      values (%s, %s, %s, %s, \
+			      %s, %s, %s, %s, \
+			      %s, %s, %s, %s)",
+			(self.worldId, self.cellIdX, self.cellIdY, self.levelIdZ, \
+			 self.dirt, self.water, self.air, self.rock, \
+			 self.grass, self.forest, self.farm, self.city))
+		       
+    cursor.close()
+    
+  def drawTile(self):
+    if self.dirt + self.rock > 0.99:
+      #underground
+      newImage = Image.open("img-src/rock.png")
+    elif self.air > 0.99:
+      #up in the sky
+      newImage = Image.open("img-src/sky.png")
+    elif self.water > 0.1:
+      #more the ten percent water
+      newImage = Image.open("img-src/ocean.png")
+    elif self.dirt > 0.1:
+      if self.grass > 0.5:
+	newImage = Image.open("img-src/grassland.png")
+      else:
+	newImage = Image.open("img-src/desert.png")
+    else:
+      #somethings wrong
+      newImage = Image.open("img-src/void.png")
+
+    #should have a check the the directory exists
+    #	may want to split x, y, and z into subdirectories if the filesystem 
+    #	starts slowing down
+    imageName = "img-world-%d/zoom0-%dx-%dy-%dz.png" % (self.worldId, self.cellIdX, self.cellIdY, self.levelIdZ) 
+
+    try:
+      oldImage = Image.open(imageName);
+    
+      diff = ImageChops.difference(newImage, oldImage)
+
+      #use getbbox for now, may need to replace with something faster in the future
+      if diff.getbbox() != None:
+	newImage.save(imageName)
+      #else don't replace the image, this is mainly so that we can keep the old
+      #  creation time on the image and hopefully we can get the broser to 
+      #  pull it from it's own cache
+    except:
+      #couldn't open old image
+      newImage.save(imageName)
+
+    
+      
+      
+
+  
+class cellData:
+  cellIdX = 0
+  cellIdY = 0
+
+  heightZ = 0
+
+  levels = []
+    
+  def __init__(self, worldId, cellIdX, cellIdY):
+    self.cellIdX = cellIdX
+    self.cellIdY = cellIdY
+    
+    cursor = db.cursor()
+
+    cursor.execute("select worldSizeZ \
+		    from worldData where worldId = %s", (worldId,))
+
+    row = cursor.fetchone()
+      
+    self.heightZ = row["worldSizeZ"]
+    
+    cursor.close()
+    
+    #we don't have any cell specific data right now so we don't need to access
+    #	the cellData table
+    
+    self.levels = [levelData(worldId, cellIdX, cellIdY, z) for z in xrange(self.heightZ)]
+
+  def regenerate(self):
+    for z in xrange(self.heightZ):
+      self.levels[z].regenerate()
+
+  def regenHeightMap(self,surfaceHeight, nLevels):
+    for z in xrange(self.heightZ):
+      if z == 0:
+	
+      self.levels[z].regenHeightMap()
+      
+  def drawTiles(self):
+    for z in xrange(self.heightZ):
+      self.levels[z].drawTile()
+    
+  
+class worldData:
+  worldId = 0
+  lengthX = 0
+  lengthY = 0
+  
+  wrapX = True
+  wrapY = True  
+  
+  cols = []
+  
+  def __init__(self, worldId):
+    self.worldId = worldId
+    
+    cursor = db.cursor()
+
+    cursor.execute("select worldSizeX, worldSizeY, worldWrapX, worldWrapY \
+		    from worldData where worldId = %s", (worldId,))
+
+    row = cursor.fetchone()
+    
+    if row == None:
+      print "Did not find worldData record, exiting."
+      sys.exit(1)
+    
+    self.lengthX = row["worldSizeX"]
+    self.lengthY = row["worldSizeY"]
+    
+    self.wrapX = True if row["worldWrapX"] == 1 else False
+    self.wrapY = True if row["worldWrapY"] == 1 else False
+    
+    cursor.close()
+    
+    self.cols = [[cellData(worldId, x, y) for y in xrange(self.lengthY)] for x in xrange(self.lengthX)]
+    
+    print "World object initialized."
+
+  def regenerate(self):
+    for x in xrange(self.lengthX):
+      for y in xrange(self.lengthY):
+	self.cols[x][y].regenerate()
+
+  def regenHeightMap(self, heightmapFile, nLevels):
+    im = Image.open(heightmapFile)
+
+    self.lengthX, self.lengthY = im.size    
+
+    for x in xrange(self.lengthX):
+      for y in xrange(self.lengthY):
+	#for now we'll just assume that the height maps will range from 0 to 255
+	#  (8-bit greyscale)
+	#nLevels has the -2 so that we always have a clear sky level and a solid rock level
+	height = math.floor(float(im.getpixel((x,y)))*float(nLevels-2)/255.0)
+
+	self.cols[x][y].regenHeightMap(height, nLevels)
+	
+  def drawTiles(self):
+    for x in xrange(self.lengthX):
+      for y in xrange(self.lengthY):
+	self.cols[x][y].drawTiles()
+    
+  
+def initServer(mode):
+  global world
+  if mode == "static":
+    world = worldData("static")
+  
+def generateTiles():
+  world.generateTiles()
+  
+def start():
+  initServer("static")  
+  
+if __name__=='__main__':
+  random.seed()
+  
+  worldObj = worldData(worldId)
+  
+  if len(sys.argv) < 2 or sys.argv[1] == "update":
+    #update the tiles to reflect changes in the database
+    worldObj.drawTiles()
+  elif sys.argv[1] == "regen":
+    #regenerate the world map based on parameters from the worldData table
+    worldObj.regenerate()
+    worldObj.drawTiles()
+  elif sys.argv[1] == "heightmap"
+    #rebuild world from a height map
+    #argument 1 is the heightmap file, 2 is the number of levels to calculate
+    worldObj.regenHeightMap(sys.argv[2], sys.argv[3])
+    worldObj.drawTiles()  
+  else:
+    print "Unknown command"
+    
+  db.closeCommit()
+

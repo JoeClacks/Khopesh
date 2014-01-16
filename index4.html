@@ -1,0 +1,165 @@
+<html xmlns="http://www.w3.org/1999/xhtml" debug="true">
+  <head>
+    <title>OpenLayers: Popup Mayhem</title>
+<!--     Stylesheets should always be loaded before all scripts -->
+		<link type="text/css" href="css/jquery-ui.css" rel="stylesheet" />	
+		<link rel="stylesheet" href="style.css" type="text/css" /> 
+		
+		
+		
+<!-- 		These should be moved to the end of the html document later for preformance-->		
+		<script src="jquery.js"></script>
+		<script type="text/javascript" src="jquery-ui.js"></script>
+
+    <script src="khopeshjs/init.js"></script>
+    <script src="khopeshjs/modelspinner.js"></script>
+		<script src="khopeshjs/usermodel.js"></script>
+		<script src="khopeshjs/worldmodel.js"></script>
+		<script src="khopeshjs/worldmap.js"></script>
+		<script src="khopeshjs/controller.js"></script>
+		<script src="khopeshjs/display.js"></script>
+    <script type="text/javascript">
+			var timeout = 0;
+      $(document).ready(function(){
+				var time = new Date();
+				Khopesh.console(time.getTime());
+				
+				$("button").button();
+				
+				$("button-icon").each(function (i){
+					var tmp = $(this);
+					tmp.button({
+						icons: {
+							primary: tmp.attr("icon"),
+						},
+						text: false
+					});
+				});
+				
+				$(".z-control-icon").button("disable");
+				
+				//only the enough to get the page to display the basics here
+				$("#tabs-a").tabs({
+					show: Khopesh.clickTab,
+				});
+				
+				$("#tabs-a").tabs("disable",2);
+				
+				$(".console-outer").click(function() {
+					Khopesh.console("Blarg");
+				});
+				
+				Khopesh.bootstrap();
+      });
+    </script>
+  </head>
+  <body>
+
+    <div id="header" class="ui-widget-header ui-corner-all ui-helper-clearfix">
+			<span class="header-title">
+				Khopesh
+			</span>
+			<div id="header-bar">
+				<span id="header-text">
+				Some text
+				</span>
+				<button id="header-login">
+					Login
+				</button>
+				<button id="header-register">
+					Register
+				</button>
+				<button id="header-recover">
+					Recover
+				</button>
+				<button id="header-logout">
+					Logout
+				</button>
+			</div>
+    </div>
+    
+    
+    <div id="centercol">
+			<div id="tabs-a">
+				<ul id="tabs-a-header" class="tab-header">
+					<li><a href="#tabs-a-1">Console</a></li>
+					<li><a href="#tabs-a-2">Map</a></li>
+					<li><a href="#tabs-a-3">Player</a></li>
+<!--					<li><a href="#tabs-a-4">Family</a></li>
+					<li><a href="#tabs-a-5">Avatar</a></li>-->
+				</ul>
+				
+				<div id="tabs-a-1" class="tab-content-clipped console-outer">
+					<div class="console-inner">
+						Datetime: 
+					</div>
+				</div>
+				
+				<div id="tabs-a-2" class="tab-content-clipped">
+					<div id="worldmap">
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-e" style="left: 45px; top: 45px;" onClick="Khopesh.WorldMap.moveMap(1,0)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-s" style="left: 30px; top: 75px;" onClick="Khopesh.WorldMap.moveMap(0,1)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-w" style="left: 15px; top: 45px;" onClick="Khopesh.WorldMap.moveMap(-1,0)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-circle-triangle-n" style="left: 30px; top: 15px;" onClick="Khopesh.WorldMap.moveMap(0,-1)"></button-icon>
+						
+						<button-icon class="control-icon" icon="ui-icon-plusthick" style="left: 90px; top: 30px;" onClick="Khopesh.WorldMap.zoomMap(-1)"></button-icon>
+						<button-icon class="control-icon" icon="ui-icon-minusthick" style="left: 90px; top: 60px;" onClick="Khopesh.WorldMap.zoomMap(1)"></button-icon>
+						
+						<button-icon class="control-icon z-control-icon" icon="ui-icon-arrowreturnthick-1-n" style="left: 120px; top: 30px;" onClick="Khopesh.WorldMap.moveMapZ(1)"></button-icon>
+						<button-icon class="control-icon z-control-icon" icon="ui-icon-arrowreturnthick-1-s" style="left: 120px; top: 60px;" onClick="Khopesh.WorldMap.moveMapZ(-1)"></button-icon>
+						<div id="viewport">
+							<div id="innermap">
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div id="tabs-a-3" class="tab-content-unclipped">
+					<div>
+						World playerlist:
+						<select id="tabs-a-3-playerlist">
+						</select>
+						<button id="tabs-a-3-chat">
+						Chat
+						</button>
+					</div>
+					<div>
+						<button id="tabs-a-3-move-north">north</button>
+						<button id="tabs-a-3-move-south">south</button>
+						<button id="tabs-a-3-move-east">east</button>
+						<button id="tabs-a-3-move-west">west</button>
+					</div>
+				</div>
+				
+				<div id="tabs-a-4" class="tab-content-unclipped">
+				</div>
+				
+				<div id="tabs-a-5" class="tab-content-unclipped">
+				</div>
+			</div>
+		</div>
+		
+		<div id="hidden">
+			<dialog id="dialog-login" title="Login">
+				<div id="dialog-login-msg"></div><br /> <!--This is where error messages will be displayed-->
+				Username: <input type='textbox' id='dialog-login-username'/> <br />
+				Password: <input type='password' id='dialog-login-password' />
+			</dialog>
+			
+			<div id="register-dialog" title="Register">
+				Username: <input type='textbox' id='register-username-textbox'/> <br />
+				Password: <input type='password' id='register-password-textbox' />
+			</div>
+			
+			<div id="chat-dialog" title="Chat">
+				Chatting with: <span id="chat-dialog-name"></span>
+				<div id="chat-dialog-text">&nbsp;</div>
+				<input type="text" id="chat-dialog-input"></input>
+				<button id="chat-dialog-send">Send</button>
+				<button id="chat-dialog-recv">Recv</button>
+			</div>
+			
+			<img src="img-src/void.png" id="reference-image" />
+    </div>
+  </body>
+</html>
